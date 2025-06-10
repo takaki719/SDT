@@ -3,7 +3,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
-# Hugging FaceのTransformersライブラリ。事前学習済みモデルを利用するために使用
 import transformers 
 # このプロジェクトで定義されたスタイルエンコーダーやカスタムモジュール
 from model.styleencoder import StyleEncoder
@@ -17,7 +16,7 @@ class Wav2vec2(torch.nn.Module):
     """MMSモデルを使って、音声から言語的な特徴表現を抽出するクラス"""
     def __init__(self, layer=7):  # 論文では7層目を使用
         super().__init__() 
-        # 論文で言及されているMMS（大規模多言語音声）モデルを使用
+        # MMS（大規模多言語音声）モデルを使用
         self.wav2vec2 = transformers.Wav2Vec2ForPreTraining.from_pretrained("facebook/mms-300m")
         # MMSモデルの重みは学習中に更新しない（特徴抽出器として固定）
         for param in self.wav2vec2.parameters():
@@ -47,7 +46,7 @@ class PitchEncoder(nn.Module):
         
     def forward(self, f0):
         # f0: [B, 1, T] ここでのTはメルスペクトログラムの時間長の4倍
-        # 論文で言及されているように対数変換を適用。知覚的なスケールに近づける効果がある
+        # 対数変換を適用。知覚的なスケールに近づける
         f0_log = torch.log(f0 + 1.0)
         return self.conv(f0_log)
 
